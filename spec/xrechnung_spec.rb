@@ -114,6 +114,7 @@ RSpec.describe Xrechnung do
     expected.gsub!(/\s*<!--.+?-->/mi, "")
 
     expect(doc.to_xml).to eq(expected)
+    Pathname.new('spec/output/standard.xml').write doc.to_xml
   end
   # rubocop:enable RSpec/ExampleLength
   #
