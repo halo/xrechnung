@@ -24,6 +24,8 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "builder", "~> 3.2"
 
+  spec.add_development_dependency "factory_bot"
+  spec.add_development_dependency "faker"
   spec.add_development_dependency "tty-command"
   spec.add_development_dependency "rubyzip", "> 2.0"
 end
