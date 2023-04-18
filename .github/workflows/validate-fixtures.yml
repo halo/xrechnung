@@ -19,8 +19,8 @@ jobs:
         ruby-version:  "2.7"
         bundler-cache: true
 
-    - name: Prepare validator
-      run: bundle exec rake validator:download
+    - name: Run specs
+      run: bundle exec rake
 
     - name: Run validator
       run: bundle exec rake validator:run

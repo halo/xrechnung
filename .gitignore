@@ -1,11 +1,15 @@
 /.bundle/
 /.yardoc
+/.history
 /_yardoc/
 /coverage/
 /doc/
 /pkg/
 /spec/reports/
 /tmp/
+
+# macOS
+.DS_Store
 
 # rspec failure tracking
 .rspec_status
@@ -14,6 +18,5 @@
 .ruby-version
 .ruby-gemset
 .gems/
-
 # validator working directory
-validator/
+/validator/
