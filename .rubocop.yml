@@ -39,9 +39,6 @@ Layout/ExtraSpacing:
 Layout/FirstArrayElementIndentation:
   EnforcedStyle: consistent
 
-Layout/FirstHashElementIndentation:
-  EnforcedStyle: consistent
-
 Layout/HashAlignment:
   EnforcedColonStyle: table
   EnforcedHashRocketStyle: table
@@ -331,9 +328,6 @@ Style/SlicingWithRange:
 
 Style/StringConcatenation:
   Enabled: true
-
-Style/StringLiterals:
-  EnforcedStyle: double_quotes
 
 Style/TrailingCommaInArguments:
   EnforcedStyleForMultiline: comma

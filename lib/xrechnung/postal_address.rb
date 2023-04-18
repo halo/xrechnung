@@ -31,10 +31,15 @@ module Xrechnung
       xml.cac :PostalAddress do
         xml.cbc :StreetName, street_name if street_name
         xml.cbc :AdditionalStreetName, additional_street_name if additional_street_name
+
+        # Mostly mandatory according to BR-DE-3 and BR-DE-8
         xml.cbc :CityName, city_name if city_name
+
+        # Mostly mandatory according to BR-DE-4, BR-DE-9
         xml.cbc :PostalZone, postal_zone if postal_zone
         xml.cbc :CountrySubentity, country_subentity if country_subentity
 
+        # Mostly mandatory, according to BT-40, BT-55
         xml.cac :Country do
           xml.cbc :IdentificationCode, country_id
         end

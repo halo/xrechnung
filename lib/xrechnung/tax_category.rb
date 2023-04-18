@@ -29,11 +29,32 @@ module Xrechnung
     #   @return [String]
     member :tax_scheme_id, type: String, default: "VAT"
 
+    # VAT exemption reason text BT-120
+    #
+    # In Textform angegebener Grund für die Befreiung des Betrages von der Umsatzsteuerpflicht oder dafür,
+    # warum keine Umsatzsteuer berechnet wird
+    # Artikel 226 Nummer 11 bis 15 der Richtlinie 2006/112/EG.
+    #
+    # @!attribute tax_exemption_reason_text
+    #   @return [String]
+    member :tax_exemption_reason_text, type: String
+
+    # VAT exemption reason code BT-121
+    #
+    # In Codeform angegebener Grund für die Befreiung des Betrages von der Umsatzsteuerpflicht
+    # Codeliste von der Connecting Europe Facility ausgegeben und geführt.
+    #
+    # @!attribute tax_exemption_reason_code
+    #   @return [String]
+    member :tax_exemption_reason_code, type: String
+
     # noinspection RubyResolve
     def to_xml(xml, root_tag_name: :TaxCategory)
       xml.cac root_tag_name do
         xml.cbc :ID, id
         xml.cbc :Percent, format("%.2f", percent)
+        xml.cbc :TaxExemptionReason, tax_exemption_reason_text if tax_exemption_reason_text
+        xml.cbc :TaxExemptionReasonCode, tax_exemption_reason_code if tax_exemption_reason_code
         xml.cac :TaxScheme do
           xml.cbc :ID, tax_scheme_id
         end

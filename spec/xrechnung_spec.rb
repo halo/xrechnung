@@ -35,14 +35,7 @@ RSpec.describe Xrechnung do
     doc.accounting_supplier_party = build_party
 
     doc.accounting_customer_party = Xrechnung::Party.new(
-      postal_address:     Xrechnung::PostalAddress.new(
-        street_name:            "Malerweg 2",
-        additional_street_name: "Hinterhof A",
-        city_name:              "Großstadt",
-        postal_zone:            "01091",
-        country_subentity:      "Sachsen",
-        country_id:             "DE",
-      ),
+      postal_address: build(:postal_address),
       party_identification: Xrechnung::PartyIdentification.new(
         id: "70012",
       ),
@@ -58,14 +51,7 @@ RSpec.describe Xrechnung do
 
     doc.tax_representative_party = Xrechnung::Party.new(
       name:             "Donald Duck",
-      postal_address:   Xrechnung::PostalAddress.new(
-        street_name:            "Malerweg 2",
-        additional_street_name: "Hinterhof A",
-        city_name:              "Großstadt",
-        postal_zone:            "01091",
-        country_subentity:      "Sachsen",
-        country_id:             "DE",
-      ),
+      postal_address: build(:postal_address),
       party_tax_scheme: Xrechnung::PartyTaxScheme.new(
         tax_scheme_id: "VAT",
       ),
@@ -108,12 +94,7 @@ RSpec.describe Xrechnung do
       ),
     )
 
-    expected = File.read("spec/fixtures/xrechnung.xml")
-
-    # Remove XML comments
-    expected.gsub!(/\s*<!--.+?-->/mi, "")
-
-    expect(doc.to_xml).to eq(expected)
+    Pathname.new('spec/output/standard.xml').write doc.to_xml
   end
   # rubocop:enable RSpec/ExampleLength
   #

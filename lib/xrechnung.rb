@@ -4,6 +4,8 @@ require "xrechnung/currency"
 require "xrechnung/quantity"
 require "xrechnung/id"
 require "xrechnung/member_container"
+require "xrechnung/delivery"
+require "xrechnung/additional_document_reference"
 require "xrechnung/contact"
 require "xrechnung/party_identification"
 require "xrechnung/party_legal_entity"
@@ -53,6 +55,18 @@ module Xrechnung
     # @!attribute due_date
     #   @return [Date]
     member :due_date, type: Date
+
+    # Der Begin der Leistungsperiode
+    #
+    # @!attribute invoice_start_date
+    #   @return [Date]
+    member :invoice_start_date, type: Date
+
+    # Das Ende der Leistungsperiode
+    #
+    # @!attribute invoice_end_date
+    #   @return [Date]
+    member :invoice_end_date, type: Date
 
     # Invoice type code BT-3
     # Ein Code, der den Funktionstyp der Rechnung angibt.
@@ -109,6 +123,14 @@ module Xrechnung
     # @!attribute sales_order_reference
     #   @return [String]
     member :sales_order_reference, type: String, optional: true
+
+    # Invoiced object identifier BT-18
+    #
+    # Eine vom Verkäufer angegebene Kennung für ein Objekt, auf das sich die Rechnung bezieht.
+    #
+    # @!attribute invoiced_object_identifier
+    #   @return [String]
+    member :invoiced_object_identifier, type: String, optional: true
 
     # Gruppe SELLER BG-4
     #
@@ -231,6 +253,10 @@ module Xrechnung
     #   @return [Xrechnung::LegalMonetaryTotal]
     member :legal_monetary_total, type: Xrechnung::LegalMonetaryTotal
 
+    # Ein Element um Rechnungs PDFs inline mit base64 encoded zu embedden.
+    #  @return [Xrechnung::AdditionalDocumentReference]
+    member :additional_document_reference, type: Xrechnung::AdditionalDocumentReference
+
     # INVOICE LINE BG-25
     #
     # Eine Gruppe von Informationselementen, die Informationen über einzelne
@@ -240,6 +266,14 @@ module Xrechnung
     #   @return [Array]
     member :invoice_lines, type: Array, default: []
 
+    #  @return [Xrechnung::Delivery]
+    member :delivery, type: Xrechnung::Delivery
+
+    # The order of the tags is important (although it should not have to in XML).
+    # The restriction is defined by a Sequence in the UBL Invoice schema.
+    # See http://www.datypic.com/sc/ubl21/e-ns39_Invoice.html
+    # See also https://github.com/itplr-kosit/validator-configuration-xrechnung/issues/31
+    #
     def to_xml(indent: 2, target: "")
       xml = Builder::XmlMarkup.new(indent: indent, target: target)
       xml.instruct! :xml, version: "1.0", encoding: "UTF-8"
@@ -250,7 +284,7 @@ module Xrechnung
         "xmlns:cbc"          => "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2",
         "xmlns:xsi"          => "http://www.w3.org/2001/XMLSchema-instance",
         "xsi:schemaLocation" => "urn:oasis:names:specification:ubl:schema:xsd:Invoice-2 http://docs.oasis-open.org/ubl/os-UBL-2.1/xsd/maindoc/UBL-Invoice-2.1.xsd" do
-        xml.cbc :CustomizationID, "urn:cen.eu:en16931:2017#compliant#urn:xoev-de:kosit:standard:xrechnung_2.0"
+        xml.cbc :CustomizationID, "urn:cen.eu:en16931:2017#compliant#urn:xoev-de:kosit:standard:xrechnung_2.2"
         xml.cbc :ID, id
         xml.cbc :IssueDate, issue_date
         xml.cbc :DueDate, due_date
@@ -260,10 +294,17 @@ module Xrechnung
           xml.cbc :Note, note
         end
 
-        xml.cbc :TaxPointDate, tax_point_date
+        xml.cbc :TaxPointDate, tax_point_date if tax_point_date
         xml.cbc :DocumentCurrencyCode, document_currency_code
-        xml.cbc :TaxCurrencyCode, tax_currency_code
+        xml.cbc :TaxCurrencyCode, tax_currency_code if tax_currency_code
         xml.cbc :BuyerReference, buyer_reference
+
+        unless invoice_start_date.nil? && invoice_end_date.nil?
+          xml.cac :InvoicePeriod do
+            xml.cbc:StartDate, invoice_start_date
+            xml.cbc:EndDate, invoice_end_date
+          end
+        end
 
         xml.cac :OrderReference do
           xml.cbc :ID, purchase_order_reference
@@ -272,18 +313,24 @@ module Xrechnung
           end
         end
 
-        unless members[:billing_reference][:optional] && billing_reference.nil?
-          xml.cac :BillingReference do
-            billing_reference&.to_xml(xml)
+        unless contract_document_reference_id.nil?
+          xml.cac :ContractDocumentReference do
+            xml.cbc :ID, contract_document_reference_id
           end
         end
 
-        xml.cac :ContractDocumentReference do
-          xml.cbc :ID, contract_document_reference_id
+        unless invoiced_object_identifier.nil?
+          xml.cac :AdditionalDocumentReference do
+            xml.cbc :ID, invoiced_object_identifier
+          end
         end
 
-        xml.cac :ProjectReference do
-          xml.cbc :ID, project_reference_id
+        additional_document_reference&.to_xml(xml)
+
+        unless project_reference_id.nil?
+          xml.cac :ProjectReference do
+            xml.cbc :ID, project_reference_id
+          end
         end
 
         xml.cac :AccountingSupplierParty do
@@ -300,27 +347,39 @@ module Xrechnung
           end
         end
 
-        xml.cac :PaymentMeans do
-          payment_means&.to_xml(xml)
+        unless delivery.nil?
+          delivery&.to_xml(xml)
         end
 
-        xml.cac :PaymentTerms do
-          xml.cbc :Note, payment_terms_note
+        unless payment_means.nil?
+          xml.cac :PaymentMeans do
+            payment_means&.to_xml(xml)
+          end
         end
 
-        xml.cac :TaxTotal do
-          tax_total&.to_xml(xml)
+        unless payment_terms_note.nil?
+          xml.cac :PaymentTerms do
+            xml.cbc :Note, payment_terms_note
+          end
         end
 
-        xml.cac :LegalMonetaryTotal do
-          legal_monetary_total&.to_xml(xml)
+        unless tax_total.nil?
+          xml.cac :TaxTotal do
+            tax_total&.to_xml(xml)
+          end
+        end
+
+        unless legal_monetary_total.nil?
+          xml.cac :LegalMonetaryTotal do
+            legal_monetary_total&.to_xml(xml)
+          end
         end
 
         invoice_lines.each do |invoice_line|
           invoice_line&.to_xml(xml)
         end
-      end
 
+      end
       target
     end
   end
