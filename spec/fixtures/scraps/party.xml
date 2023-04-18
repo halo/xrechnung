@@ -17,6 +17,7 @@
   </cac:PartyTaxScheme>
   <cac:PartyLegalEntity>
     <cbc:RegistrationName>Harry Hirsch Holz- und Trockenbau</cbc:RegistrationName>
+    <cbc:CompanyID/>
   </cac:PartyLegalEntity>
   <cac:Contact>
     <cbc:Name>Harry Hirsch</cbc:Name>

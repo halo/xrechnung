@@ -17,6 +17,7 @@ module Xrechnung
 
       attr_reader :path, :files
 
+      # See https://github.com/itplr-kosit/validator/blob/main/src/main/java/de/kosit/validationtool/cmd/CommandLineOptions.java
       def arguments
         [
           '-jar', jar_path,

@@ -58,6 +58,7 @@ module Xrechnung
         'https://github.com/itplr-kosit/validator/releases/download/v1.5.0/validator-1.5.0-distribution.zip'
       end
 
+      # See https://github.com/itplr-kosit/validator-configuration-xrechnung/releases
       def scenarios_url
         # 2.2.x
         'https://github.com/itplr-kosit/validator-configuration-xrechnung/releases/download/release-2022-11-15/validator-configuration-xrechnung_2.2.0_2022-11-15.zip'
