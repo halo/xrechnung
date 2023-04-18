@@ -20,3 +20,6 @@
 .gems/
 # validator working directory
 /validator/
+
+# Test-generated invoices
+/spec/output/*.xml

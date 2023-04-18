@@ -17,7 +17,7 @@ namespace :validator do
   desc 'Run validator'
   task run: :download do
     path = Pathname.new(__dir__).join('validator')
-    pattern = Pathname.new(__dir__).join('spec/fixtures/*.xml')
+    pattern = Pathname.new(__dir__).join('spec/output/*.xml')
     files = Pathname.glob(pattern).map(&:to_s).join(' ')
     Xrechnung::Validator::Run.new(path: path, files: files).call
   end
