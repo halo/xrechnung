@@ -63,6 +63,7 @@ RSpec.describe Xrechnung do
     )
 
     doc.payment_means = build_payment_means
+    doc.invoice_period = Xrechnung::InvoicePeriod.new(start_date: Date.today)
 
     doc.payment_terms_note = "Zahlungsziel: 10 Tage nach Zugang der Rechnung"
 

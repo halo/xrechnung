@@ -6,6 +6,7 @@ require "xrechnung/id"
 require "xrechnung/member_container"
 require "xrechnung/additional_document_reference"
 require "xrechnung/contact"
+require "xrechnung/invoice_period"
 require "xrechnung/party_identification"
 require "xrechnung/party_legal_entity"
 require "xrechnung/party_tax_scheme"
@@ -55,18 +56,6 @@ module Xrechnung
     # @!attribute due_date
     #   @return [Date]
     member :due_date, type: Date
-
-    # Der Begin der Leistungsperiode
-    #
-    # @!attribute invoice_start_date
-    #   @return [Date]
-    member :invoice_start_date, type: Date
-
-    # Das Ende der Leistungsperiode
-    #
-    # @!attribute invoice_end_date
-    #   @return [Date]
-    member :invoice_end_date, type: Date
 
     # Invoice type code BT-3
     # Ein Code, der den Funktionstyp der Rechnung angibt.
@@ -186,6 +175,9 @@ module Xrechnung
     #   @return [String]
     member :buyer_reference, type: String
 
+    # Invoice Period BG-14
+    member :invoice_period, type: Xrechnung::InvoicePeriod, optional: true
+
     # @!attribute billing_reference
     #   @return [Xrechnung::InvoiceDocumentReference]
     member :billing_reference, type: Xrechnung::InvoiceDocumentReference, optional: true
@@ -299,12 +291,7 @@ module Xrechnung
         xml.cbc :TaxCurrencyCode, tax_currency_code if tax_currency_code
         xml.cbc :BuyerReference, buyer_reference
 
-        unless invoice_start_date.nil? && invoice_end_date.nil?
-          xml.cac :InvoicePeriod do
-            xml.cbc:StartDate, invoice_start_date
-            xml.cbc:EndDate, invoice_end_date
-          end
-        end
+        invoice_period&.to_xml(xml)
 
         xml.cac :OrderReference do
           xml.cbc :ID, purchase_order_reference
