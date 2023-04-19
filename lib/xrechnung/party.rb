@@ -18,6 +18,13 @@ module Xrechnung
     #   @return [Xrechnung::PartyTaxScheme]
     member :party_tax_scheme, type: Xrechnung::PartyTaxScheme
 
+    # BT-32
+    # With cac:Taxscheme/cbc: ID!= "VAT"
+    #
+    # @!attribute party_tax_scheme
+    #   @return [Xrechnung::PartyTaxScheme]
+    member :secondary_tax_scheme, type: Xrechnung::PartyTaxScheme
+
     # @!attribute party_legal_entity
     #   @return [Xrechnung::PartyLegalEntity]
     member :party_legal_entity, type: Xrechnung::PartyLegalEntity
@@ -59,6 +66,7 @@ module Xrechnung
       party_identification&.to_xml(xml)
       postal_address&.to_xml(xml)
       party_tax_scheme&.to_xml(xml)
+      secondary_tax_scheme&.to_xml(xml)
       party_legal_entity&.to_xml(xml)
       contact&.to_xml(xml)
     end
