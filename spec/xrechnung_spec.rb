@@ -55,6 +55,10 @@ RSpec.describe Xrechnung do
       party_tax_scheme: Xrechnung::PartyTaxScheme.new(
         tax_scheme_id: "VAT",
       ),
+      party_secondary_tax_scheme: Xrechnung::PartyTaxScheme.new(
+        tax_scheme_id: "AAA",
+        company_id: '12345',
+      ),
       nested:           false,
     )
 
