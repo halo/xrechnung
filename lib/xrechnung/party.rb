@@ -23,7 +23,7 @@ module Xrechnung
     #
     # @!attribute party_tax_scheme
     #   @return [Xrechnung::PartyTaxScheme]
-    member :secondary_tax_scheme, type: Xrechnung::PartyTaxScheme
+    member :party_secondary_tax_scheme, type: Xrechnung::PartyTaxScheme
 
     # @!attribute party_legal_entity
     #   @return [Xrechnung::PartyLegalEntity]
@@ -66,7 +66,7 @@ module Xrechnung
       party_identification&.to_xml(xml)
       postal_address&.to_xml(xml)
       party_tax_scheme&.to_xml(xml)
-      secondary_tax_scheme&.to_xml(xml)
+      party_secondary_tax_scheme&.to_xml(xml)
       party_legal_entity&.to_xml(xml)
       contact&.to_xml(xml)
     end
