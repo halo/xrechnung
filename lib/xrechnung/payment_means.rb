@@ -32,7 +32,7 @@ module Xrechnung
     # noinspection RubyResolve
     def to_xml(xml)
       xml.cbc :PaymentMeansCode, payment_means_code
-      xml.cbc :InstructionNote, instruction_note
+      xml.cbc :InstructionNote, instruction_note if instruction_note # See UBL-CR-414
       xml.cbc :PaymentID, payment_id
       payee_financial_account&.to_xml(xml)
     end
